@@ -1,0 +1,10 @@
+{
+  "name": "com.advertisingsdk.ttsdk",
+  "displayName": "AdvertisingSdk.TTSDK",
+  "description": "tou tiao guang gao sdk",
+  "version": "1.0.0",
+  "unity": "2018.3",
+  "license": "MIT",
+  "dependencies": {
+  }
+}
