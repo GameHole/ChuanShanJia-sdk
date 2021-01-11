@@ -2,16 +2,14 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-
+using MiniGameSDK;
 namespace TTSDK
 {
     [InitializeOnLoad]
-	public class TPHelper
+	public class TPHelper:IParamSettng
 	{
-        static TPHelper()
-        {
-        }
-        [MenuItem("穿山甲/创建参数")]
+        
+        //[MenuItem("穿山甲/创建参数")]
         static void create()
         {
             var tp = AScriptableObject.Get<TPPama>();
@@ -20,10 +18,10 @@ namespace TTSDK
                 var m = AssetHelper.CreateAsset<TPPama>();
                 Debug.Log($"创建成功 保存至 Resouses/{m.filePath}");
             }
-            else
-            {
-                Debug.Log($"文件已存在 Resouses/{tp.filePath}");
-            }
+            //else
+            //{
+            //    Debug.Log($"文件已存在 Resouses/{tp.filePath}");
+            //}
         }
         //[MenuItem("穿山甲/应用参数")]
         public static void apply()
@@ -60,5 +58,10 @@ namespace TTSDK
                 Debug.Log("请先创建广告参数");
             }
         }
-	}
+
+        public void SetParam()
+        {
+            create();
+        }
+    }
 }

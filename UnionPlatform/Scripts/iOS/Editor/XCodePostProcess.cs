@@ -7,7 +7,7 @@
 
 namespace ByteDance.Union
 {
-    #if !UNITY_ANDROID
+#if UNITY_IOS
     using UnityEditor;
     using UnityEngine;
     using System.Text;

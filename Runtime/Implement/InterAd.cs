@@ -5,23 +5,24 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace TTSDK
 {
-    public class InterAd : IInterstitialAdAPI
+    public class InterAd :MonoBehaviour, IInterstitialAdAPI,IReloader
     {
+        IRetryer retryer;
         public event Action<bool> onClose;
         private FullScreenVideoAd fullScreenVideoAd;
-        AdSlot adSlot;
         FullScreenVideoAdListener listener;
-        public InterAd()
+
+        public int RetryCount => 3;
+
+        public int IdCount => AdHelper.tp.intersititialIds.Length;
+
+        public Action<bool> onReloaded { get; set; }
+
+        void Awake()
         {
 #if !UNITY_EDITOR
-            adSlot = new AdSlot.Builder()
-                             .SetCodeId(AdHelper.tp.intersititialId)
-                             .SetSupportDeepLink(true)
-                                 .SetImageAcceptedSize(1080, 1920)
-                                 .SetOrientation(AdHelper.GetCurrentOrientation())
-                                 .Build();
             listener = new FullScreenVideoAdListener(this);
-            LoadFullScreenVideoAd();
+            retryer.Regist(this);
 #endif
         }
 
@@ -37,13 +38,7 @@ namespace TTSDK
         }
         public void LoadFullScreenVideoAd()
         {
-            if (this.fullScreenVideoAd != null)
-            {
-                return;
-            }
-            
-            AdHelper.AdNative.LoadFullScreenVideoAd(adSlot, listener);
-
+            retryer.Load(this);
         }
         /// <summary>
         /// Show the reward Ad.
@@ -56,11 +51,28 @@ namespace TTSDK
             }
         }
 
+        public void Reload(int id)
+        {
+            var adSlot = new AdSlot.Builder()
+                            .SetCodeId(AdHelper.tp.intersititialIds[id])
+                            .SetSupportDeepLink(true)
+                            .SetImageAcceptedSize(1080, 1920)
+                            .SetOrientation(AdHelper.GetCurrentOrientation())
+                            .Build();
+
+            if (this.fullScreenVideoAd != null)
+            {
+                return;
+            }
+
+            AdHelper.AdNative.LoadFullScreenVideoAd(adSlot, listener);
+        }
+
         private sealed class FullScreenVideoAdListener : IFullScreenVideoAdListener
         {
             private InterAd inter;
             FullScreenAdInteractionListener listener;
-            int retryCount = 1;
+            //int retryCount = 1;
             public FullScreenVideoAdListener(InterAd example)
             {
                 this.inter = example;
@@ -70,17 +82,19 @@ namespace TTSDK
             public void OnError(int code, string message)
             {
                 Debug.LogError("OnFullScreenError: " + message);
-                MonoEx.Wait(null, retryCount, inter.LoadFullScreenVideoAd);
-                retryCount <<= 1;
+                inter.onReloaded?.Invoke(false);
+                //MonoEx.Wait(null, retryCount, inter.LoadFullScreenVideoAd);
+                //retryCount <<= 1;
+                //Debug.Log(retryCount);
             }
 
             public void OnFullScreenVideoAdLoad(FullScreenVideoAd ad)
             {
                 Debug.Log("OnFullScreenAdLoad");
-
+                inter.onReloaded?.Invoke(true);
                 ad.SetFullScreenVideoAdInteractionListener(listener);
                 ad.SetDownloadListener(AdHelper.GetDownListener());
-                retryCount = 1;
+                //retryCount = 1;
                 this.inter.fullScreenVideoAd = ad;
             }
 
