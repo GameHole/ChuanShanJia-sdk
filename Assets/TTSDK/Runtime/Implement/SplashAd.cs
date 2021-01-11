@@ -5,8 +5,9 @@ using UnityEngine;
 using MiniGameSDK;
 namespace TTSDK
 {
-	public class SplashAd:ISplashAd
+	public class SplashAd:ISplashAd,IReloader
     {
+        IRetryer retryer;
         private AndroidJavaObject mSplashAdManager;
         public AndroidJavaObject GetSplashAdManager()
         {
@@ -22,20 +23,33 @@ namespace TTSDK
 
         public Action OnClsoe { get => onclose; set => onclose=value; }
 
-        public void LoadSplashAd()
-        {
-            var adSlot = new AdSlot.Builder()
-            .SetCodeId(AdHelper.tp.splushId)
-            .SetImageAcceptedSize(1080, 1920)
-            .Build();
-            AdHelper.AdNative.LoadSplashAd(adSlot, new SplashAdListener(AdHelper.GetActivity(), GetSplashAdManager()) { splash = this });
-        }
+        public int RetryCount => 3;
+
+        public int IdCount => AdHelper.tp.splushIds.Length;
+
+        public Action<bool> onReloaded { get ; set ; }
+
+        //public void LoadSplashAd()
+        //{
+        //    retryer.Load(this);
+        //}
 
         public void Show()
         {
 #if !UNITY_EDITOR
-            LoadSplashAd();
+            retryer.Regist(this);
 #endif
+        }
+
+        public void Reload(int id)
+        {
+            Debug.Log($"load {AdHelper.tp.splushIds[id]}");
+            var adSlot = new AdSlot.Builder()
+            .SetCodeId(AdHelper.tp.splushIds[id])
+            .SetImageAcceptedSize(1080, 1920)
+            //.SetExpressViewAcceptedSize(Screen.width, Screen.height)
+            .Build();
+            AdHelper.AdNative.LoadSplashAd(adSlot, new SplashAdListener(AdHelper.GetActivity(), GetSplashAdManager()) { splash = this });
         }
 
         private sealed class SplashAdListener : ISplashAdListener, ISplashAdInteractionListener
@@ -53,6 +67,7 @@ namespace TTSDK
 
             public void OnError(int code, string message)
             {
+                splash.onReloaded?.Invoke(false);
                 Debug.Log("splash load Onerror:" + code + ":" + message);
             }
 
@@ -60,6 +75,7 @@ namespace TTSDK
             {
                 if (ad != null)
                 {
+                    splash.onReloaded?.Invoke(true);
                     Debug.Log("splash load Onsucc:");
                     ad.SetSplashInteractionListener(this);
                     if (ad.GetInteractionType() == INTERACTION_TYPE_DOWNLOAD)

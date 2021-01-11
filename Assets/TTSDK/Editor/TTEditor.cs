@@ -25,7 +25,7 @@ namespace TTSDK
             EditorGUI.indentLevel = 1;
             foreach (var item in ps)
             {
-                EditorGUILayout.PropertyField(item, new GUIContent(item.name));
+                EditorGUILayout.PropertyField(item, true/* new GUIContent(item.name)*/);
                 GUILayout.Space(5);
             }
             if (GUI.changed)

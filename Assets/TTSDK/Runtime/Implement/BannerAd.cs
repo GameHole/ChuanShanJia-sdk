@@ -7,14 +7,23 @@ using ByteDance.Union;
 
 namespace TTSDK
 {
-    public class BannerAd :MonoBehaviour, IBannerAd
+    public class BannerAd :MonoBehaviour, IBannerAd,IReloader
     {
+        IRetryer retryer;
         ExpressAd mExpressBannerAd;
         ExpressAdInteractionListener expressAdInteractionListener = new ExpressAdInteractionListener(1);
         ExpressAdDislikeCallback dislikeCallback;
+        ExpressAdListener listener;
         public Action<int> onClose { get; set; }
-        AdSlot adSlot;
-        public Vector2 size = new Vector2(0.2f, 0.1f);
+
+        public int RetryCount => 3;
+
+        public int IdCount =>AdHelper.tp.bannerIds.Length;
+
+        public Action<bool> onReloaded { get ; set ; }
+
+        public int widthDp=600;
+        public int hightDp=90;
         public float reShowTime = 30;
         public bool useReShow;
         float add;
@@ -22,24 +31,16 @@ namespace TTSDK
         public void Awake()
         {
             //Debug.Log($"w::{Screen.width},h::{Screen.height},sx::{size.x},sy::{size.y} rx::{size.x * Screen.width}，ry::{size.y * Screen.height}" );
-            var tp = AdHelper.tp.bannerId;
-            adSlot = new AdSlot.Builder()
-                    .SetCodeId(tp)
-                    ////期望模板广告view的size,单位dp，//高度按照实际rit对应宽高传入
-                    .SetExpressViewAcceptedSize(size.x*0.5f * Screen.width, size.y * Screen.height)
-                    .SetSupportDeepLink(true)
-                    .SetImageAcceptedSize(1080, 1920)
-                    .SetAdCount(1)
-                    .SetOrientation(AdHelper.GetCurrentOrientation())
-                    .Build();
+            
             dislikeCallback = new ExpressAdDislikeCallback(this, 1);
             onClose += (v) =>
             {
                 StartCountDown();
                 LoadExpressBannerAd();
             };
+            listener = new ExpressAdListener(this, 1);
 #if !UNITY_EDITOR
-            LoadExpressBannerAd();
+            retryer.Regist(this);
 #endif
         }
         private void Update()
@@ -64,7 +65,7 @@ namespace TTSDK
         }
         public void LoadExpressBannerAd()
         {
-            AdHelper.AdNative.LoadExpressBannerAd(adSlot, new ExpressAdListener(this, 1));
+            retryer.Load(this);
         }
         public void ShowExpressBannerAd()
         {
@@ -89,12 +90,30 @@ namespace TTSDK
         public void Hide()
         {
             StopCountDown();
+#if !UNITY_EDITOR
             if (this.mExpressBannerAd != null)
             {
                 NativeAdManager.Instance().DestoryExpressAd(this.mExpressBannerAd.handle);
                 this.mExpressBannerAd = null;
             }
             LoadExpressBannerAd();
+#endif
+        }
+
+        public void Reload(int id)
+        {
+            var tp = AdHelper.tp.bannerIds[id];
+            var adSlot = new AdSlot.Builder()
+                    .SetCodeId(tp)
+                    ////期望模板广告view的size,单位dp，//高度按照实际rit对应宽高传入
+                    //.SetExpressViewAcceptedSize(size.x*0.5f * Screen.width, size.y * Screen.height)
+                    .SetExpressViewAcceptedSize(widthDp, hightDp)
+                    .SetSupportDeepLink(true)
+                    .SetImageAcceptedSize(Screen.width, Screen.height)
+                    .SetAdCount(1)
+                    .SetOrientation(AdHelper.GetCurrentOrientation())
+                    .Build();
+            AdHelper.AdNative.LoadExpressBannerAd(adSlot, listener);
         }
 
         private sealed class ExpressAdDislikeCallback : IDislikeInteractionListener
@@ -109,19 +128,19 @@ namespace TTSDK
             public void OnCancel()
             {
                 example.onClose?.Invoke(0);
-                Debug.LogError("express dislike OnCancel");
+                Debug.Log("express dislike OnCancel");
             }
 
             public void OnRefuse()
             {
                 example.onClose?.Invoke(1);
-                Debug.LogError("express dislike onRefuse");
+                Debug.Log("express dislike onRefuse");
             }
 
             public void OnSelected(int var1, string var2)
             {
                 example.onClose?.Invoke(2);
-                Debug.LogError("express dislike OnSelected:" + var2);
+                Debug.Log("express dislike OnSelected:" + var2);
                 //释放广告资源
                 switch (type)
                 {
@@ -139,7 +158,7 @@ namespace TTSDK
         {
             private BannerAd example;
             private int type;//0:feed   1:banner  2:interstitial
-            int retry = 1;
+            //int retry = 1;
             public ExpressAdListener(BannerAd example, int type)
             {
                 this.example = example;
@@ -147,15 +166,18 @@ namespace TTSDK
             }
             public void OnError(int code, string message)
             {
-                Debug.LogError("onExpressAdError: " + message);
-                MonoEx.Wait(null, retry,  example.LoadExpressBannerAd);
-                retry <<= 1;
+                Debug.LogError("onExpressBannerAdError: " + message);
+                example.onReloaded?.Invoke(false);
+                //MonoEx.Wait(null, retry,  example.LoadExpressBannerAd);
+                //retry <<= 1;
+                //Debug.Log($"banner retry {retry}");
             }
 
             public void OnExpressAdLoad(List<ExpressAd> ads)
             {
-                retry = 1;
-                Debug.LogError("OnExpressAdLoad");
+                example.onReloaded?.Invoke(true);
+                //retry = 1;
+                Debug.Log("OnExpressBannerAdLoad");
                 IEnumerator<ExpressAd> enumerator = ads.GetEnumerator();
                 if (enumerator.MoveNext())
                 {
@@ -178,26 +200,26 @@ namespace TTSDK
             }
             public void OnAdClicked(ExpressAd ad)
             {
-                Debug.LogError("express OnAdClicked,type:" + type);
+                Debug.Log("express OnAdClicked,type:" + type);
             }
 
             public void OnAdShow(ExpressAd ad)
             {
-                Debug.LogError("express OnAdShow,type:" + type);
+                Debug.Log("express OnAdShow,type:" + type);
             }
 
             public void OnAdViewRenderError(ExpressAd ad, int code, string message)
             {
-                Debug.LogError("express OnAdViewRenderError,type:" + type);
+                Debug.Log("express OnAdViewRenderError,type:" + type);
             }
 
             public void OnAdViewRenderSucc(ExpressAd ad, float width, float height)
             {
-                Debug.LogError("express OnAdViewRenderSucc,type:" + type);
+                Debug.Log("express OnAdViewRenderSucc,type:" + type);
             }
             public void OnAdClose(ExpressAd ad)
             {
-                Debug.LogError("express OnAdClose,type:" + type);
+                Debug.Log("express OnAdClose,type:" + type);
             }
         }
     }

@@ -20,7 +20,7 @@ public final class UnionApplication extends Application {
         super.onCreate();
 
         TTAdConfig config = new TTAdConfig.Builder()
-            .appId("5001121")
+            .appId("5129580")
             .useTextureView(false) //使用TextureView控件播放视频,默认为SurfaceView,当有SurfaceView冲突的场景，可以使用TextureView
             .appName("APP测试媒体")
             .titleBarTheme(TTAdConstant.TITLE_BAR_THEME_DARK)

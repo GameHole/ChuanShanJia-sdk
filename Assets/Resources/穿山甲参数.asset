@@ -13,8 +13,14 @@ MonoBehaviour:
   m_Name: "\u7A7F\u5C71\u7532\u53C2\u6570"
   m_EditorClassIdentifier: 
   isDebug: 0
-  appid: 5001121
-  rewardId: 901121430
-  intersititialId: 901121184
-  bannerId: 901121246
-  splushId: 887341406
+  appid: 5129580
+  rewardIds:
+  - 945698223
+  - 945735912
+  intersititialIds:
+  - 945698227
+  - 945735915
+  bannerIds:
+  - 945698231
+  splushIds:
+  - 887415840

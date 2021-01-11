@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 using UnityEngine;
 namespace TTSDK
 {
-    public class RewardAd : MonoBehaviour, IRewardAdAPI
+    public class RewardAd : MonoBehaviour, IRewardAdAPI,IReloader
     {
         public bool debug;
         public bool isNotUseAd { get => debug; set => debug = value; }
         public bool isRewared { get; set; }
+
+        public int RetryCount => 3;
+
+        public int IdCount => AdHelper.tp.rewardIds.Length;
+
+        public Action<bool> onReloaded { get ; set ; }
+
         public string userId = "user123";
         public event Action<bool> onClose;
         Action<bool> used_onClose;
@@ -18,22 +25,15 @@ namespace TTSDK
         AdNative adNative;
         TaskCompletionSource<bool> tcs;
         RewardVideoAdListener listener;
-        AdSlot adSlot;
+        //AdSlot adSlot;
+        public IRetryer retryer;
         private void Awake()
         {
+
 #if !UNITY_EDITOR
             listener = new RewardVideoAdListener(this);
-            adSlot = new AdSlot.Builder()
-            .SetCodeId(AdHelper.tp.rewardId)
-            .SetSupportDeepLink(true)
-                .SetImageAcceptedSize(1080, 1920)
-                .SetRewardName("金币") // 奖励的名称
-                .SetRewardAmount(3) // 奖励的数量
-                .SetUserID(userId) // 用户id,必传参数
-                .SetMediaExtra("media_extra") // 附加参数，可选
-                .SetOrientation(AdHelper.GetCurrentOrientation()) // 必填参数，期望视频的播放方向
-                .Build();
-            LoadRewardAd();
+            retryer.Regist(this);
+            //LoadRewardAd();
 #endif
         }
         public void AutoShow(Action<bool> onclose)
@@ -47,6 +47,7 @@ namespace TTSDK
         {
             isRewared = false;
             tcs = new TaskCompletionSource<bool>();
+            ShowRewardAd();
             return tcs.Task;
         }
         public void Onclose(bool isEnd)
@@ -54,39 +55,75 @@ namespace TTSDK
             if (isRewared) return;
             isRewared = true;
             used_onClose?.Invoke(isEnd);
-            tcs?.SetResult(isEnd);
+            if (tcs != null && !tcs.Task.IsCompleted)
+                tcs?.SetResult(isEnd);
         }
         public bool isReady()
         {
-            return rewardAd != null && rewardAd.IsDownloaded;
+            return rewardAd != null /*&& rewardAd.IsDownloaded*/;
         }
         /// <summary>
         /// Load the reward Ad.
         /// </summary>
         public void LoadRewardAd()
         {
-            if (rewardAd != null) return;
-           
+            retryer.Load(this);
+            //if (rewardAd != null) return;
+            //var adSlot = new AdSlot.Builder()
+            //     .SetCodeId(AdHelper.tp.rewardIds[rid++.Warped(IdCount)])
+            //     .SetSupportDeepLink(true)
+            //     .SetImageAcceptedSize(1080, 1920)
+            //     .SetRewardName("金币") // 奖励的名称
+            //     .SetRewardAmount(3) // 奖励的数量
+            //     .SetUserID(userId) // 用户id,必传参数
+            //     .SetMediaExtra("media_extra") // 附加参数，可选
+            //     .SetOrientation(AdHelper.GetCurrentOrientation()) // 必填参数，期望视频的播放方向
+            //     .Build();
 
-            AdHelper.AdNative.LoadRewardVideoAd(
-                adSlot, listener);
+            //AdHelper.AdNative.LoadRewardVideoAd(
+            //    adSlot, listener);
         }
         /// <summary>
         /// Show the reward Ad.
         /// </summary>
         public void ShowRewardAd()
         {
+            if (isNotUseAd)
+            {
+                Onclose(true);
+                return;
+            }
             if (isReady())
             {
                 rewardAd.ShowRewardVideoAd();
             }
 
         }
+
+        public void Reload(int id)
+        {
+            if (rewardAd != null) return;
+            //Debug.Log($"reward id::{AdHelper.tp.rewardIds[id]}");
+            var adSlot = new AdSlot.Builder()
+                 .SetCodeId(AdHelper.tp.rewardIds[id])
+                 .SetSupportDeepLink(true)
+                 .SetImageAcceptedSize(1080, 1920)
+                 .SetRewardName("金币") // 奖励的名称
+                 .SetRewardAmount(3) // 奖励的数量
+                 .SetUserID(userId) // 用户id,必传参数
+                 .SetMediaExtra("media_extra") // 附加参数，可选
+                 .SetOrientation(AdHelper.GetCurrentOrientation()) // 必填参数，期望视频的播放方向
+                 .Build();
+
+            AdHelper.AdNative.LoadRewardVideoAd(
+                adSlot, listener);
+        }
+
         private sealed class RewardVideoAdListener : IRewardVideoAdListener
         {
             private RewardAd reward;
             RewardAdInteractionListener listener;
-            int retryCount = 1;
+            //int retryCount = 1;
             public RewardVideoAdListener(RewardAd example)
             {
                 this.reward = example;
@@ -95,21 +132,24 @@ namespace TTSDK
 
             public void OnError(int code, string message)
             {
+                reward.onReloaded?.Invoke(false);
                 Debug.LogError("OnRewardError: " + message);
-                reward.Wait(retryCount, () =>
-                {
-                    reward.LoadRewardAd();
-                });
-                retryCount <<= 1;
+                //reward.Wait(retryCount, () =>
+                //{
+                //    reward.LoadRewardAd();
+                //});
+                //retryCount <<= 1;
+                //reward.retryer.Restart(reward.retryId);
             }
 
             public void OnRewardVideoAdLoad(RewardVideoAd ad)
             {
                 Debug.Log("OnRewardVideoAdLoad");
-
+                reward.onReloaded?.Invoke(true);
                 ad.SetRewardAdInteractionListener(listener);
                 ad.SetDownloadListener(AdHelper.GetDownListener());
-                retryCount = 1;
+                //retryCount = 1;
+                //reward.retryer.Clear(reward.retryId);
                 this.reward.rewardAd = ad;
             }
 

@@ -7,6 +7,7 @@ namespace MiniGameSDK
         ISplashAd splash;
         IInterstitialAdAPI interstitialAd;
         IBannerAd banner;
+        IRewardAdAPI rewardAd;
         private void Awake()
         {
             splash.OnClsoe = () => Debug.Log("TestClass::splsh as closed");
@@ -15,6 +16,17 @@ namespace MiniGameSDK
         public void ShowFull()
         {
             interstitialAd.Show();
+        }
+        public async void ShowRw()
+        {
+            Debug.Log(await rewardAd.AutoShowAsync());
+        }
+        public  void ShowRw1()
+        {
+            rewardAd.AutoShow((v) =>
+            {
+                Debug.Log(v);
+            });
         }
         public void Show()
         {

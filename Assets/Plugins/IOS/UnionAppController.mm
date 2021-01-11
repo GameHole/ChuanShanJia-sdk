@@ -24,7 +24,7 @@ IMPL_APP_CONTROLLER_SUBCLASS (UnionAppController)
     
     [super application:application didFinishLaunchingWithOptions:launchOptions];
 
-    [BUAdSDKManager setAppID: @"5001121"];
+    [BUAdSDKManager setAppID: @"5129580"];
     [BUAdSDKManager setIsPaidApp:NO];
 #if DEBUG
     //是否打开log信息，默认没有
