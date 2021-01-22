@@ -21,13 +21,14 @@ namespace TTSDK
         public int IdCount =>AdHelper.tp.bannerIds.Length;
 
         public Action<bool> onReloaded { get ; set ; }
+        public Action onHide { get ; set; }
 
         public int widthDp=600;
         public int hightDp=90;
-        public float reShowTime = 30;
-        public bool useReShow;
-        float add;
-        bool isRun;
+        //public float reShowTime = 30;
+        //public bool useReShow;
+        //float add;
+        //bool isRun;
         public void Awake()
         {
             //Debug.Log($"w::{Screen.width},h::{Screen.height},sx::{size.x},sy::{size.y} rx::{size.x * Screen.width}，ry::{size.y * Screen.height}" );
@@ -35,7 +36,7 @@ namespace TTSDK
             dislikeCallback = new ExpressAdDislikeCallback(this, 1);
             onClose += (v) =>
             {
-                StartCountDown();
+                //StartCountDown();
                 LoadExpressBannerAd();
             };
             listener = new ExpressAdListener(this, 1);
@@ -43,22 +44,22 @@ namespace TTSDK
             retryer.Regist(this);
 #endif
         }
-        private void Update()
-        {
-            if (isRun)
-            {
-                add += Time.deltaTime;
-                if (add >= reShowTime)
-                {
-                    add = 0;
-                    isRun = false;
-                    if (useReShow)
-                    {
-                        Show();
-                    }
-                }
-            }
-        }
+        //private void Update()
+        //{
+        //    if (isRun)
+        //    {
+        //        add += Time.deltaTime;
+        //        if (add >= reShowTime)
+        //        {
+        //            add = 0;
+        //            isRun = false;
+        //            if (useReShow)
+        //            {
+        //                Show();
+        //            }
+        //        }
+        //    }
+        //}
         public void Show()
         {
             ShowExpressBannerAd();
@@ -78,18 +79,19 @@ namespace TTSDK
             this.mExpressBannerAd.SetDownloadListener(AdHelper.GetDownListener());
             NativeAdManager.Instance().ShowExpressBannerAd(AdHelper.GetActivity(), mExpressBannerAd.handle, expressAdInteractionListener, dislikeCallback);
         }
-        public void StartCountDown()
-        {
-            add = 0;
-            isRun = useReShow;
-        }
-        public void StopCountDown()
-        {
-            isRun = false;
-        }
+        //public void StartCountDown()
+        //{
+        //    add = 0;
+        //    isRun = useReShow;
+        //}
+        //public void StopCountDown()
+        //{
+        //    isRun = false;
+        //}
         public void Hide()
         {
-            StopCountDown();
+            //StopCountDown();
+            onHide?.Invoke();
 #if !UNITY_EDITOR
             if (this.mExpressBannerAd != null)
             {
@@ -127,13 +129,13 @@ namespace TTSDK
             }
             public void OnCancel()
             {
-                example.onClose?.Invoke(0);
+                //example.onClose?.Invoke(0);
                 Debug.Log("express dislike OnCancel");
             }
 
             public void OnRefuse()
             {
-                example.onClose?.Invoke(1);
+                //example.onClose?.Invoke(1);
                 Debug.Log("express dislike onRefuse");
             }
 
