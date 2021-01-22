@@ -187,6 +187,7 @@ namespace TTSDK
                     {
                         case 1:
                             this.example.mExpressBannerAd = enumerator.Current;
+                            this.example.mExpressBannerAd.SetDownloadListener(AdHelper.GetDownListener());
                             break;
                     }
                 }
