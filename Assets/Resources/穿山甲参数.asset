@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55c7ef92111346c4ca4e3443fe275822, type: 3}
   m_Name: "\u7A7F\u5C71\u7532\u53C2\u6570"
   m_EditorClassIdentifier: 
-  isDebug: 0
+  isDebug: 1
   appid: 5129580
   rewardIds:
   - 945698223
