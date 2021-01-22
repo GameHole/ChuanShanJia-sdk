@@ -793,6 +793,7 @@ GameObject:
   - component: {fileID: 1125353875}
   - component: {fileID: 1125353877}
   - component: {fileID: 1125353878}
+  - component: {fileID: 1125353879}
   m_Layer: 0
   m_Name: RefinteInitializer
   m_TagString: Untagged
@@ -841,8 +842,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   widthDp: 380
   hightDp: 70
-  reShowTime: 2
-  useReShow: 1
 --- !u!114 &1125353876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -881,6 +880,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74b8a4f2173c94b4aa7643e8139cedbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1125353879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1125353872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed1a9c283e90f045bbe3111c13cddb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reShowTime: 30
+  useReShow: 0
 --- !u!1 &1169867872
 GameObject:
   m_ObjectHideFlags: 0
