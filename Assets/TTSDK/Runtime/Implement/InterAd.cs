@@ -29,7 +29,7 @@ namespace TTSDK
 
         public bool isReady()
         {
-            return this.fullScreenVideoAd != null && fullScreenVideoAd.IsDownloaded;
+            return this.fullScreenVideoAd != null;
         }
 
         public void Show()
