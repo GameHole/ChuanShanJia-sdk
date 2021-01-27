@@ -19,7 +19,7 @@ namespace TTSDK
                 Debug.Log($"创建成功 保存至 Resouses/{m.filePath}");
             }
             GradleHelper.CombineProguard(AssetDatabase.GUIDToAssetPath("6de1926d664a3435e9e357fd75876a60"), "TTSDK");
-            AssetDatabase.Refresh();
+            //AssetDatabase.Refresh();
             //else
             //{
             //    Debug.Log($"文件已存在 Resouses/{tp.filePath}");
