@@ -50,6 +50,7 @@ namespace TTSDK
                     string fileInit = File.ReadAllText(file);
                     fileInit = fileInit.Replace("#APPID#", tp.appid);
                     fileInit = fileInit.Replace("#DEBUG#", tp.isDebug.ToString().ToLower());
+                    fileInit = fileInit.Replace("#AUTHORI#", tp.enableManualAuthorization.ToString().ToLower());
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
                     File.WriteAllText($"{path}/{Path.GetFileNameWithoutExtension(file)}.{ex}", fileInit);
