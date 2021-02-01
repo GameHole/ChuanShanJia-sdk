@@ -15,6 +15,7 @@ import com.bytedance.sdk.openadsdk.TTCustomController;
 import com.bytedance.sdk.openadsdk.TTLocation;
 
 public final class UnionApplication extends Application {
+	public static boolean enableManualAuthorization = #AUTHORI#;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -49,7 +50,7 @@ public final class UnionApplication extends Application {
     private static class MyTTCustomController extends TTCustomController{
         @Override
         public boolean isCanUseLocation() {
-            return super.isCanUseLocation();
+            return enableManualAuthorization&&super.isCanUseLocation();
         }
 
         @Override
@@ -59,12 +60,12 @@ public final class UnionApplication extends Application {
 
         @Override
         public boolean alist() {
-            return super.alist();
+            return enableManualAuthorization&&super.alist();
         }
 
         @Override
         public boolean isCanUsePhoneState() {
-            return super.isCanUsePhoneState();
+            return enableManualAuthorization&&super.isCanUsePhoneState();
         }
 
         @Override
@@ -74,12 +75,12 @@ public final class UnionApplication extends Application {
 
         @Override
         public boolean isCanUseWifiState() {
-            return super.isCanUseWifiState();
+            return enableManualAuthorization&&super.isCanUseWifiState();
         }
 
         @Override
         public boolean isCanUseWriteExternal() {
-            return super.isCanUseWriteExternal();
+            return enableManualAuthorization&&super.isCanUseWriteExternal();
         }
     }
 }
