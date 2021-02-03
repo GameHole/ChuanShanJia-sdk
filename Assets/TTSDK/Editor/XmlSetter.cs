@@ -38,7 +38,7 @@ namespace TTSDK
             if (dc.FindNode("/manifest/application/provider", "android:name", "com.bytedance.sdk.openadsdk.TTFileProvider") == null)
             {
                 var app = dc.SelectSingleNode("/manifest/application");
-                (app as XmlElement).AppendAttribute("name", "com.bytedance.android.UnionApplication");
+                //(app as XmlElement).AppendAttribute("name", "com.bytedance.android.UnionApplication");
                 var use = dc.CreateElement("uses-library");
                 use.AppendAttribute("name", "org.apache.http.legacy");
                 use.AppendAttribute("required", "false");

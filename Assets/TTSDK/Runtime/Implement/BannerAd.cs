@@ -11,7 +11,7 @@ namespace TTSDK
     {
         IRetryer retryer;
         ExpressAd mExpressBannerAd;
-        ExpressAdInteractionListener expressAdInteractionListener = new ExpressAdInteractionListener(1);
+        ExpressAdInteractionListener expressAdInteractionListener;
         ExpressAdDislikeCallback dislikeCallback;
         ExpressAdListener listener;
         public Action<int> onClose { get; set; }
@@ -25,6 +25,9 @@ namespace TTSDK
 
         public int widthDp=600;
         public int hightDp=90;
+
+        public event Action onShow;
+
         //public float reShowTime = 30;
         //public bool useReShow;
         //float add;
@@ -32,7 +35,7 @@ namespace TTSDK
         public void Awake()
         {
             //Debug.Log($"w::{Screen.width},h::{Screen.height},sx::{size.x},sy::{size.y} rx::{size.x * Screen.width}，ry::{size.y * Screen.height}" );
-            
+            expressAdInteractionListener = new ExpressAdInteractionListener(1,this);
             dislikeCallback = new ExpressAdDislikeCallback(this, 1);
             onClose += (v) =>
             {
@@ -196,9 +199,10 @@ namespace TTSDK
         private sealed class ExpressAdInteractionListener : IExpressAdInteractionListener
         {
             int type;//0:feed   1:banner  2:interstitial
-
-            public ExpressAdInteractionListener(int type)
+            BannerAd banner;
+            public ExpressAdInteractionListener(int type,BannerAd banner)
             {
+                this.banner = banner;
                 this.type = type;
             }
             public void OnAdClicked(ExpressAd ad)
@@ -208,6 +212,7 @@ namespace TTSDK
 
             public void OnAdShow(ExpressAd ad)
             {
+                banner.onShow?.Invoke();
                 Debug.Log("express OnAdShow,type:" + type);
             }
 

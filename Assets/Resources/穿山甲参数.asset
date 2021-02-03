@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "\u7A7F\u5C71\u7532\u53C2\u6570"
   m_EditorClassIdentifier: 
   isDebug: 1
+  enableManualAuthorization: 1
   appid: 5129580
   rewardIds:
   - 945698223
