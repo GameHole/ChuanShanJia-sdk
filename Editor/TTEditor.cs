@@ -32,7 +32,7 @@ namespace TTSDK
             {
                 EditorUtility.SetDirty(target);
             }
-            GUILayout.Space(5);
+            //GUILayout.Space(5);
             if (GUILayout.Button("Apply"))
             {
                 TPHelper.apply();

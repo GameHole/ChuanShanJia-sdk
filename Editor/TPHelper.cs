@@ -34,7 +34,7 @@ namespace TTSDK
         }
         static void applyInitFile()
         {
-            copyAndReplace("3a19db2af2c49dc4fb0518be7c295493", "Assets/Plugins/Android","java");
+            //copyAndReplace("3a19db2af2c49dc4fb0518be7c295493", "Assets/Plugins/Android","java");
             copyAndReplace("aee32d31b23faea45b22e489c6d9a535", "Assets/Plugins/Android/res/xml", "xml");
             copyAndReplace("5323257a56ff24f43933c1deb2d335f7", "Assets/Plugins/IOS","mm");
         }
