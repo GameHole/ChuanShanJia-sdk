@@ -4,6 +4,7 @@ namespace MiniGameSDK
 {
 	public class TestClass:MonoBehaviour
 	{
+        IAdIniter initer;
         ISplashAd splash;
         IInterstitialAdAPI interstitialAd;
         IBannerAd banner;
@@ -12,6 +13,10 @@ namespace MiniGameSDK
         {
             splash.OnClsoe = () => Debug.Log("TestClass::splsh as closed");
             splash.Show();
+            initer.onInited += (v) =>
+            {
+                Debug.Log("initer.onInited--------------");
+            };
         }
         public void ShowFull()
         {
