@@ -36,20 +36,24 @@ namespace TTSDK
 
         public void Show()
         {
+#if UNITY_ANDROID
 #if !UNITY_EDITOR
             retryer.Regist(this);
+#endif
 #endif
         }
 
         public void Reload(int id)
         {
+#if UNITY_ANDROID
             Debug.Log($"load {AdHelper.tp.splushIds[id]}");
             var adSlot = new AdSlot.Builder()
             .SetCodeId(AdHelper.tp.splushIds[id])
             .SetImageAcceptedSize(1080, 1920)
             //.SetExpressViewAcceptedSize(Screen.width, Screen.height)
             .Build();
-            AdHelper.AdNative.LoadSplashAd(adSlot, new SplashAdListener(AdHelper.GetActivity(), GetSplashAdManager()) { splash = this });
+            AdHelper.AdNative.LoadSplashAd(adSlot, new SplashAdListener(ActivityGeter.GetActivity(), GetSplashAdManager()) { splash = this });
+#endif
         }
 
         private sealed class SplashAdListener : ISplashAdListener, ISplashAdInteractionListener

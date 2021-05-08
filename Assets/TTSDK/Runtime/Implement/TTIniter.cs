@@ -26,7 +26,7 @@ namespace TTSDK
 #if !UNITY_EDITOR
             Init();
 #endif
-            Debug.Log("INIT_____________________------------------------");
+            //Debug.Log("INIT_____________________------------------------");
         }
         void Init()
         {
