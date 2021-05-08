@@ -65,6 +65,7 @@ namespace TTSDK
         //}
         public void Show()
         {
+            //Debug.Log("TT banner show");
             ShowExpressBannerAd();
         }
         public void LoadExpressBannerAd()
@@ -77,10 +78,12 @@ namespace TTSDK
             {
                 return;
             }
+#if UNITY_ANDROID
             //设置轮播间隔 30s--120s;不设置则不开启轮播
-            this.mExpressBannerAd.SetSlideIntervalTime(30 * 1000);
+            //this.mExpressBannerAd.SetSlideIntervalTime(30 * 1000);
             this.mExpressBannerAd.SetDownloadListener(AdHelper.GetDownListener());
-            NativeAdManager.Instance().ShowExpressBannerAd(AdHelper.GetActivity(), mExpressBannerAd.handle, expressAdInteractionListener, dislikeCallback);
+            NativeAdManager.Instance().ShowExpressBannerAd(ActivityGeter.GetActivity(), mExpressBannerAd.handle, expressAdInteractionListener, dislikeCallback);
+#endif
         }
         //public void StartCountDown()
         //{
@@ -195,6 +198,17 @@ namespace TTSDK
                     }
                 }
             }
+#if UNITY_IOS
+            public void OnExpressBannerAdLoad(ExpressBannerAd ad)
+            {
+                
+            }
+
+            public void OnExpressInterstitialAdLoad(ExpressInterstitialAd ad)
+            {
+                
+            }
+#endif
         }
         private sealed class ExpressAdInteractionListener : IExpressAdInteractionListener
         {

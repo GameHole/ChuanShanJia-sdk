@@ -5,17 +5,17 @@ namespace TTSDK
 {
     public static class AdHelper
     {
-        private static AndroidJavaObject activity;
-        public static AndroidJavaObject GetActivity()
-        {
-            if (activity == null)
-            {
-                var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-                if (unityPlayer != null)
-                    activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            }
-            return activity;
-        }
+        //private static AndroidJavaObject activity;
+        //public static AndroidJavaObject GetActivity()
+        //{
+        //    if (activity == null)
+        //    {
+        //        var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        //        if (unityPlayer != null)
+        //            activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+        //    }
+        //    return activity;
+        //}
         private static AdNative adNative;
         public static AdNative AdNative
         {
@@ -39,18 +39,18 @@ namespace TTSDK
                 return _tp ?? (_tp = AScriptableObject.Get<TPPama>());
             }
         }
-        private static AndroidJavaObject mNativeAdManager;
-        public static AndroidJavaObject GetNativeAdManager()
-        {
-            if (mNativeAdManager == null)
-            {
-                var jc = new AndroidJavaClass(
-                          "com.bytedance.android.NativeAdManager");
-                if (jc != null)
-                    mNativeAdManager = jc.CallStatic<AndroidJavaObject>("getNativeAdManager");
-            }
-            return mNativeAdManager;
-        }
+        //private static AndroidJavaObject mNativeAdManager;
+        //public static AndroidJavaObject GetNativeAdManager()
+        //{
+        //    if (mNativeAdManager == null)
+        //    {
+        //        var jc = new AndroidJavaClass(
+        //                  "com.bytedance.android.NativeAdManager");
+        //        if (jc != null)
+        //            mNativeAdManager = jc.CallStatic<AndroidJavaObject>("getNativeAdManager");
+        //    }
+        //    return mNativeAdManager;
+        //}
         public static IAppDownloadListener GetDownListener()
         {
             return new AppDownloadListener();
