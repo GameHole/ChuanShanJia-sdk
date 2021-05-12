@@ -37,6 +37,10 @@ import java.util.List;
 @SuppressWarnings("EmptyMethod")
 public class NativeAdManager {
 
+    public static int _gravity;
+    public  static void SetGravity(String mark,int gravity){
+        _gravity=gravity;
+    }
     private static volatile NativeAdManager sManager;
 
     private Context mContext;
@@ -348,7 +352,7 @@ public class NativeAdManager {
                         removeAdView((Activity) context, mExpressBannerView);
                         mExpressBannerView = view;
                         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams((int) dip2Px(context, v), (int) dip2Px(context, v1));
-                        layoutParams.gravity = Gravity.CENTER | Gravity.BOTTOM;
+                        layoutParams.gravity = _gravity;//Gravity.CENTER | Gravity.BOTTOM;
                         addAdView((Activity) context, mExpressBannerView, layoutParams);
                     }
                 });

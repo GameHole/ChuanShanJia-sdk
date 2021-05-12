@@ -9,6 +9,10 @@ namespace TTSDK
 {
     public class BannerAd :MonoBehaviour, IBannerAd,IReloader
     {
+        public enum Gravity
+        {
+            BOTTOM = 80, CENTER = 17, LEFT = 3, NO_GRAVITY = 0, RIGHT = 5, TOP = 48
+        }
         IRetryer retryer;
         ExpressAd mExpressBannerAd;
         ExpressAdInteractionListener expressAdInteractionListener;
@@ -17,7 +21,10 @@ namespace TTSDK
         public Action<int> onClose { get; set; }
 
         public int RetryCount => 3;
-
+        public Gravity[] gravities = new Gravity[]
+        {
+             Gravity.BOTTOM, Gravity.CENTER
+        };
         public int IdCount =>AdHelper.tp.bannerIds.Length;
 
         public Action<bool> onReloaded { get ; set ; }
@@ -28,10 +35,10 @@ namespace TTSDK
 
         public event Action onShow;
 
-        //public float reShowTime = 30;
-        //public bool useReShow;
-        //float add;
-        //bool isRun;
+#if UNITY_ANDROID
+        AndroidJavaClass mgr;
+#endif
+
         public void Awake()
         {
             //Debug.Log($"w::{Screen.width},h::{Screen.height},sx::{size.x},sy::{size.y} rx::{size.x * Screen.width}，ry::{size.y * Screen.height}" );
@@ -47,22 +54,6 @@ namespace TTSDK
             retryer.Regist(this);
 #endif
         }
-        //private void Update()
-        //{
-        //    if (isRun)
-        //    {
-        //        add += Time.deltaTime;
-        //        if (add >= reShowTime)
-        //        {
-        //            add = 0;
-        //            isRun = false;
-        //            if (useReShow)
-        //            {
-        //                Show();
-        //            }
-        //        }
-        //    }
-        //}
         public void Show()
         {
             //Debug.Log("TT banner show");
@@ -79,21 +70,20 @@ namespace TTSDK
                 return;
             }
 #if UNITY_ANDROID
+            if (mgr == null)
+                mgr = new AndroidJavaClass("com.bytedance.android.NativeAdManager");
+            int g = 0;
+            for (int i = 0; i < gravities.Length; i++)
+            {
+                g |= (int)gravities[i];
+            }
+            mgr.CallStatic("SetGravity", "mark", g);
             //设置轮播间隔 30s--120s;不设置则不开启轮播
             //this.mExpressBannerAd.SetSlideIntervalTime(30 * 1000);
             this.mExpressBannerAd.SetDownloadListener(AdHelper.GetDownListener());
             NativeAdManager.Instance().ShowExpressBannerAd(ActivityGeter.GetActivity(), mExpressBannerAd.handle, expressAdInteractionListener, dislikeCallback);
 #endif
         }
-        //public void StartCountDown()
-        //{
-        //    add = 0;
-        //    isRun = useReShow;
-        //}
-        //public void StopCountDown()
-        //{
-        //    isRun = false;
-        //}
         public void Hide()
         {
             //StopCountDown();
