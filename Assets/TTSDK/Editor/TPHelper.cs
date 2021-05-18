@@ -18,7 +18,7 @@ namespace TTSDK
                 var m = AssetHelper.CreateAsset<TPPama>();
                 Debug.Log($"创建成功 保存至 Resouses/{m.filePath}");
             }
-            GradleHelper.CombineProguard(AssetDatabase.GUIDToAssetPath("6de1926d664a3435e9e357fd75876a60"), "TTSDK");
+            //GradleHelper.CombineProguard(AssetDatabase.GUIDToAssetPath("6de1926d664a3435e9e357fd75876a60"), "TTSDK");
             //AssetDatabase.Refresh();
             //else
             //{
@@ -38,7 +38,7 @@ namespace TTSDK
             copyAndReplace("aee32d31b23faea45b22e489c6d9a535", "Assets/Plugins/Android/res/xml", "xml");
             copyAndReplace("5323257a56ff24f43933c1deb2d335f7", "Assets/Plugins/IOS","mm");
         }
-        static void copyAndReplace(string guid,string outPath,string ex)
+        public static void copyAndReplace(string guid,string outPath,string ex)
         {
             var tp = AScriptableObject.Get<TPPama>();
             if (tp)

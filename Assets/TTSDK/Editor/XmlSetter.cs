@@ -5,10 +5,8 @@ namespace TTSDK
 {
 	public class XmlSetter
 	{
-        public static void Set()
+        public static void SetValues(XmlDocument dc)
         {
-            var dc = XmlHelper.GetAndroidManifest();
-
             dc.SetPermission("android.permission.INTERNET");
             dc.SetPermission("android.permission.ACCESS_NETWORK_STATE");
             var param = AScriptableObject.Get<TPPama>();
@@ -60,7 +58,11 @@ namespace TTSDK
                     .AppendAttribute("exported", "false");
                 app.AppendChild(mppdr);
             }
-            
+        }
+        public static void Set()
+        {
+            var dc = XmlHelper.GetAndroidManifest();
+            SetValues(dc);
             dc.Save();
         }
 	}
