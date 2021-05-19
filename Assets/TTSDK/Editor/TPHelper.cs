@@ -5,11 +5,10 @@ using System.IO;
 using MiniGameSDK;
 namespace TTSDK
 {
-    [InitializeOnLoad]
-	public class TPHelper:IParamSettng
+    //[InitializeOnLoad]
+	public class TPHelper//:IParamSettng
 	{
-        
-        //[MenuItem("穿山甲/创建参数")]
+        [MenuItem("穿山甲/创建参数")]
         static void create()
         {
             var tp = AScriptableObject.Get<TPPama>();
@@ -17,13 +16,13 @@ namespace TTSDK
             {
                 var m = AssetHelper.CreateAsset<TPPama>();
                 Debug.Log($"创建成功 保存至 Resouses/{m.filePath}");
+                AssetDatabase.Refresh();
             }
             //GradleHelper.CombineProguard(AssetDatabase.GUIDToAssetPath("6de1926d664a3435e9e357fd75876a60"), "TTSDK");
-            //AssetDatabase.Refresh();
-            //else
-            //{
-            //    Debug.Log($"文件已存在 Resouses/{tp.filePath}");
-            //}
+            else
+            {
+                Debug.Log($"文件已存在 Resouses/{tp.filePath}");
+            }
         }
         //[MenuItem("穿山甲/应用参数")]
         public static void apply()
@@ -35,7 +34,7 @@ namespace TTSDK
         static void applyInitFile()
         {
             //copyAndReplace("3a19db2af2c49dc4fb0518be7c295493", "Assets/Plugins/Android","java");
-            copyAndReplace("aee32d31b23faea45b22e489c6d9a535", "Assets/Plugins/Android/res/xml", "xml");
+            //copyAndReplace("aee32d31b23faea45b22e489c6d9a535", "Assets/Plugins/Android/res/xml", "xml");
             copyAndReplace("5323257a56ff24f43933c1deb2d335f7", "Assets/Plugins/IOS","mm");
         }
         public static void copyAndReplace(string guid,string outPath,string ex)
@@ -61,9 +60,9 @@ namespace TTSDK
                 Debug.Log("请先创建广告参数");
             }
         }
-        public void SetParam()
-        {
-            create();
-        }
+        //public void SetParam()
+        //{
+        //    create();
+        //}
     }
 }
