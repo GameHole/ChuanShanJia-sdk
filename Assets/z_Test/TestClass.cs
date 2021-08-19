@@ -9,10 +9,11 @@ namespace MiniGameSDK
         IInterstitialAdAPI interstitialAd;
         IBannerAd banner;
         IRewardAdAPI rewardAd;
+        IDialogPageAd pageAd;
         private void Awake()
         {
-            splash.OnClsoe = () => Debug.Log("TestClass::splsh as closed");
-            splash.Show();
+            //splash.OnClsoe = () => Debug.Log("TestClass::splsh as closed");
+            //splash.Show();
             initer.onInited += (v) =>
             {
                 Debug.Log("initer.onInited--------------");
@@ -40,6 +41,10 @@ namespace MiniGameSDK
         public void Hide()
         {
             banner.Hide();
+        }
+        public void ShowPage()
+        {
+            pageAd.Show();
         }
     }
 }

@@ -12,16 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55c7ef92111346c4ca4e3443fe275822, type: 3}
   m_Name: "\u7A7F\u5C71\u7532\u53C2\u6570"
   m_EditorClassIdentifier: 
-  isDebug: 1
+  isDebug: 0
   enableManualAuthorization: 1
-  appid: 5129580
+  appid: 5178099
   rewardIds:
-  - 945698223
-  - 945735912
+  - 946213782
+  - 946213787
+  - 946213789
   intersititialIds:
-  - 945698227
-  - 945735915
+  - 946213784
+  - 946213788
+  - 946213790
   bannerIds:
-  - 945776838
+  - 946073321
+  - 946073322
+  - 946073323
   splushIds:
-  - 887415840
+  - 887341406
+  dialogPageIds:
+  - 946519329

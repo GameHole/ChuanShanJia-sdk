@@ -12,5 +12,6 @@ namespace TTSDK
         public string[] intersititialIds = { "901121184" };
         public string[] bannerIds= { "901121246" };
         public string[] splushIds = { "887341406" };
+        public string[] dialogPageIds = { "900546270" };
     }
 }
