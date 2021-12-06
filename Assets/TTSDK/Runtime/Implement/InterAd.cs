@@ -53,18 +53,19 @@ namespace TTSDK
 
         public void Reload(int id)
         {
+            if (this.fullScreenVideoAd != null)
+            {
+                return;
+            }
             var adSlot = new AdSlot.Builder()
                             .SetCodeId(AdHelper.tp.intersititialIds[id])
                             .SetSupportDeepLink(true)
                             .SetImageAcceptedSize(1080, 1920)
                             .SetOrientation(AdHelper.GetCurrentOrientation())
+#if UNITY_ANDROID
+                            .SetDownloadType(DownloadType.DownloadTypeNoPopup)
+#endif
                             .Build();
-
-            if (this.fullScreenVideoAd != null)
-            {
-                return;
-            }
-
             AdHelper.AdNative.LoadFullScreenVideoAd(adSlot, listener);
         }
 
@@ -107,10 +108,15 @@ namespace TTSDK
             public void OnFullScreenVideoCached()
             {
                 Debug.Log("OnFullScreenVideoCached");
-                if (this.inter.fullScreenVideoAd != null)
-                {
-                    this.inter.fullScreenVideoAd.IsDownloaded = true;
-                }
+                //if (this.inter.fullScreenVideoAd != null)
+                //{
+                //    this.inter.fullScreenVideoAd.IsDownloaded = true;
+                //}
+            }
+
+            public void OnFullScreenVideoCached(FullScreenVideoAd ad)
+            {
+                Debug.Log("OnFullScreenVideoCached");
             }
         }
         private sealed class FullScreenAdInteractionListener : IFullScreenVideoAdInteractionListener

@@ -7,6 +7,7 @@ namespace TTSDK
 {
 	public class SplashAd:ISplashAd,IReloader
     {
+        BUSplashAd splashAd;
         IRetryer retryer;
         private AndroidJavaObject mSplashAdManager;
         public AndroidJavaObject GetSplashAdManager()
@@ -45,13 +46,19 @@ namespace TTSDK
 
         public void Reload(int id)
         {
-#if UNITY_ANDROID
             Debug.Log($"load {AdHelper.tp.splushIds[id]}");
             var adSlot = new AdSlot.Builder()
             .SetCodeId(AdHelper.tp.splushIds[id])
             .SetImageAcceptedSize(1080, 1920)
-            //.SetExpressViewAcceptedSize(Screen.width, Screen.height)
+#if UNITY_ANDROID
+            .SetDownloadType(DownloadType.DownloadTypeNoPopup)
+#endif
             .Build();
+
+
+#if UNITY_IOS
+            this.splashAd = (AdHelper.AdNative.LoadSplashAd_iOS(adSlot, new SplashAdListener() { splash = this } ));
+#else
             AdHelper.AdNative.LoadSplashAd(adSlot, new SplashAdListener(ActivityGeter.GetActivity(), GetSplashAdManager()) { splash = this });
 #endif
         }
@@ -62,7 +69,7 @@ namespace TTSDK
             private AndroidJavaObject activity;
             private AndroidJavaObject splashAdManager;
             private const int INTERACTION_TYPE_DOWNLOAD = 4;
-
+            public SplashAdListener() { }
             public SplashAdListener(AndroidJavaObject activity, AndroidJavaObject splashAdManager)
             {
                 this.activity = activity;
@@ -77,18 +84,20 @@ namespace TTSDK
 
             public void OnSplashAdLoad(BUSplashAd ad)
             {
+                this.splash.splashAd = ad;
+                ad.SetSplashInteractionListener(this);
+#if UNITY_ANDROID
                 if (ad != null)
                 {
                     splash.onReloaded?.Invoke(true);
                     Debug.Log("splash load Onsucc:");
-                    ad.SetSplashInteractionListener(this);
+                    
                     if (ad.GetInteractionType() == INTERACTION_TYPE_DOWNLOAD)
                     {
                         Debug.Log("splash is download type ");
                         ad.SetDownloadListener(AdHelper.GetDownListener());
                     }
                 }
-#if UNITY_ANDROID
                 if (ad != null && this.splashAdManager != null && this.activity != null)
                 {
                     this.splashAdManager.Call("showSplashAd", this.activity, ad.getCurrentSplshAd());
@@ -102,6 +111,9 @@ namespace TTSDK
                 {
                     splashAdManager.Call("destorySplashView", this.activity);
                 }
+#elif UNITY_IOS
+                splash.splashAd.Dispose();
+                splash.splashAd = null;
 #endif
                 splash.onclose?.Invoke();
             }
@@ -149,6 +161,12 @@ namespace TTSDK
             public void OnAdClose()
             {
                 DestorySplash();
+            }
+
+            public void OnTimeout()
+            {
+                Debug.Log("splash load time out");
+                splash.onReloaded?.Invoke(false);
             }
         }
     }

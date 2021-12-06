@@ -1,5 +1,4 @@
-﻿//#define UNITY_IOS
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using MiniGameSDK;
 using System;
@@ -15,6 +14,9 @@ namespace TTSDK
         }
         IRetryer retryer;
         ExpressAd mExpressBannerAd;
+#if UNITY_IOS
+        ExpressBannerAd iExpressBannerAd; // for iOS
+#endif
         ExpressAdInteractionListener expressAdInteractionListener;
         ExpressAdDislikeCallback dislikeCallback;
         ExpressAdListener listener;
@@ -32,12 +34,12 @@ namespace TTSDK
 
         public int widthDp=600;
         public int hightDp=90;
-
+        public int intervalTime = 30;
         public event Action onShow;
 
-#if UNITY_ANDROID
-        AndroidJavaClass mgr;
-#endif
+//#if UNITY_ANDROID
+//        AndroidJavaClass mgr;
+//#endif
 
         public void Awake()
         {
@@ -70,46 +72,62 @@ namespace TTSDK
                 return;
             }
 #if UNITY_ANDROID
-            if (mgr == null)
-                mgr = new AndroidJavaClass("com.bytedance.android.NativeAdManager");
-            int g = 0;
-            for (int i = 0; i < gravities.Length; i++)
-            {
-                g |= (int)gravities[i];
-            }
-            mgr.CallStatic("SetGravity", "mark", g);
+            //if (mgr == null)
+            //    mgr = new AndroidJavaClass("com.bytedance.android.NativeAdManager");
+            //int g = 0;
+            //for (int i = 0; i < gravities.Length; i++)
+            //{
+            //    g |= (int)gravities[i];
+            //}
+            //mgr.CallStatic("SetGravity", "mark", g);
             //设置轮播间隔 30s--120s;不设置则不开启轮播
-            //this.mExpressBannerAd.SetSlideIntervalTime(30 * 1000);
+            if (intervalTime > 0)
+                this.mExpressBannerAd.SetSlideIntervalTime(intervalTime * 1000);
             this.mExpressBannerAd.SetDownloadListener(AdHelper.GetDownListener());
             NativeAdManager.Instance().ShowExpressBannerAd(ActivityGeter.GetActivity(), mExpressBannerAd.handle, expressAdInteractionListener, dislikeCallback);
+#endif
+#if UNITY_IOS
+            iExpressBannerAd.ShowExpressAd(0, Screen.height - hightDp);
 #endif
         }
         public void Hide()
         {
             //StopCountDown();
             onHide?.Invoke();
-#if !UNITY_EDITOR
+#if UNITY_ANDROID
             if (this.mExpressBannerAd != null)
             {
                 NativeAdManager.Instance().DestoryExpressAd(this.mExpressBannerAd.handle);
                 this.mExpressBannerAd = null;
             }
-            LoadExpressBannerAd();
 #endif
+            LoadExpressBannerAd();
         }
 
         public void Reload(int id)
         {
+            if (widthDp == 0)
+            {
+                widthDp = Screen.width;
+            }
+            if (hightDp == 0)
+            {
+                hightDp = widthDp / 600 * 90;
+            }
             var tp = AdHelper.tp.bannerIds[id];
             var adSlot = new AdSlot.Builder()
                     .SetCodeId(tp)
-                    ////期望模板广告view的size,单位dp，//高度按照实际rit对应宽高传入
-                    //.SetExpressViewAcceptedSize(size.x*0.5f * Screen.width, size.y * Screen.height)
+#if UNITY_IOS
+                     .SetSlideIntervalTime(intervalTime)
+#endif
                     .SetExpressViewAcceptedSize(widthDp, hightDp)
                     .SetSupportDeepLink(true)
                     .SetImageAcceptedSize(Screen.width, Screen.height)
                     .SetAdCount(1)
                     .SetOrientation(AdHelper.GetCurrentOrientation())
+#if UNITY_ANDROID
+                    .SetDownloadType(DownloadType.DownloadTypeNoPopup)
+#endif
                     .Build();
             AdHelper.AdNative.LoadExpressBannerAd(adSlot, listener);
         }
@@ -135,10 +153,11 @@ namespace TTSDK
                 Debug.Log("express dislike onRefuse");
             }
 
-            public void OnSelected(int var1, string var2)
+            public void OnSelected(int var1, string var2, bool enforce)
             {
                 example.onClose?.Invoke(2);
                 Debug.Log("express dislike OnSelected:" + var2);
+#if UNITY_ANDROID
                 //释放广告资源
                 switch (type)
                 {
@@ -150,6 +169,12 @@ namespace TTSDK
                         }
                         break;
                 }
+#endif
+            }
+
+            public void OnShow()
+            {
+                Debug.Log("express dislike OnShow");
             }
         }
         private sealed class ExpressAdListener : IExpressAdListener
@@ -166,9 +191,6 @@ namespace TTSDK
             {
                 Debug.LogError("onExpressBannerAdError: " + message);
                 example.onReloaded?.Invoke(false);
-                //MonoEx.Wait(null, retry,  example.LoadExpressBannerAd);
-                //retry <<= 1;
-                //Debug.Log($"banner retry {retry}");
             }
 
             public void OnExpressAdLoad(List<ExpressAd> ads)
@@ -191,7 +213,9 @@ namespace TTSDK
 #if UNITY_IOS
             public void OnExpressBannerAdLoad(ExpressBannerAd ad)
             {
-                
+                ad.SetExpressInteractionListener(example.expressAdInteractionListener);
+                ad.SetDownloadListener(AdHelper.GetDownListener());
+                example.iExpressBannerAd = ad;
             }
 
             public void OnExpressInterstitialAdLoad(ExpressInterstitialAd ad)
@@ -231,7 +255,13 @@ namespace TTSDK
             }
             public void OnAdClose(ExpressAd ad)
             {
+                banner.onHide?.Invoke();
                 Debug.Log("express OnAdClose,type:" + type);
+            }
+
+            public void onAdRemoved(ExpressAd ad)
+            {
+                Debug.Log("express onAdRemoved,type:" + type);
             }
         }
     }

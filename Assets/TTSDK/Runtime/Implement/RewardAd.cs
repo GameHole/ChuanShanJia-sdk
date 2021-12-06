@@ -38,14 +38,12 @@ namespace TTSDK
         }
         public void AutoShow(Action<bool> onclose)
         {
-            isRewared = false;
             used_onClose = onclose + onClose;
             ShowRewardAd();
         }
 
         public Task<bool> AutoShowAsync()
         {
-            isRewared = false;
             tcs = new TaskCompletionSource<bool>();
             ShowRewardAd();
             return tcs.Task;
@@ -68,26 +66,13 @@ namespace TTSDK
         public void LoadRewardAd()
         {
             retryer.Load(this);
-            //if (rewardAd != null) return;
-            //var adSlot = new AdSlot.Builder()
-            //     .SetCodeId(AdHelper.tp.rewardIds[rid++.Warped(IdCount)])
-            //     .SetSupportDeepLink(true)
-            //     .SetImageAcceptedSize(1080, 1920)
-            //     .SetRewardName("金币") // 奖励的名称
-            //     .SetRewardAmount(3) // 奖励的数量
-            //     .SetUserID(userId) // 用户id,必传参数
-            //     .SetMediaExtra("media_extra") // 附加参数，可选
-            //     .SetOrientation(AdHelper.GetCurrentOrientation()) // 必填参数，期望视频的播放方向
-            //     .Build();
-
-            //AdHelper.AdNative.LoadRewardVideoAd(
-            //    adSlot, listener);
         }
         /// <summary>
         /// Show the reward Ad.
         /// </summary>
         public void ShowRewardAd()
         {
+            isRewared = false;
             if (isNotUseAd)
             {
                 Onclose(true);
@@ -108,15 +93,20 @@ namespace TTSDK
                  .SetCodeId(AdHelper.tp.rewardIds[id])
                  .SetSupportDeepLink(true)
                  .SetImageAcceptedSize(1080, 1920)
+#if UNITY_ANDROID
                  .SetRewardName("金币") // 奖励的名称
+
                  .SetRewardAmount(3) // 奖励的数量
+#endif
                  .SetUserID(userId) // 用户id,必传参数
                  .SetMediaExtra("media_extra") // 附加参数，可选
                  .SetOrientation(AdHelper.GetCurrentOrientation()) // 必填参数，期望视频的播放方向
+#if UNITY_ANDROID
+                .SetDownloadType(DownloadType.DownloadTypeNoPopup)
+#endif
                  .Build();
 
-            AdHelper.AdNative.LoadRewardVideoAd(
-                adSlot, listener);
+            AdHelper.AdNative.LoadRewardVideoAd(adSlot, listener);
         }
 
         private sealed class RewardVideoAdListener : IRewardVideoAdListener
@@ -134,12 +124,6 @@ namespace TTSDK
             {
                 reward.onReloaded?.Invoke(false);
                 Debug.LogError("OnRewardError: " + message);
-                //reward.Wait(retryCount, () =>
-                //{
-                //    reward.LoadRewardAd();
-                //});
-                //retryCount <<= 1;
-                //reward.retryer.Restart(reward.retryId);
             }
 
             public void OnRewardVideoAdLoad(RewardVideoAd ad)
@@ -160,11 +144,11 @@ namespace TTSDK
             public void OnRewardVideoCached()
             {
                 Debug.Log("OnRewardVideoCached");
+            }
 
-                if (this.reward.rewardAd != null)
-                {
-                    this.reward.rewardAd.IsDownloaded = true;
-                }
+            public void OnRewardVideoCached(RewardVideoAd ad)
+            {
+                Debug.Log("OnRewardVideoCached");
             }
         }
 
@@ -213,6 +197,11 @@ namespace TTSDK
                 this.reward.Onclose(isReward);
                 Debug.Log("verify:" + rewardVerify + " amount:" + rewardAmount +
                     " name:" + rewardName);
+            }
+
+            public void OnVideoSkip()
+            {
+                
             }
         }
     }

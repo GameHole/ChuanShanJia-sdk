@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "com.ad.orgion.pangle": "file:E:/WorkSpace/unityProjects/ChuanShanJia-Orgion/Assets/PangleAdapterScripts",
     "com.advertisingsdk.basic": "file:E:/WorkSpace/unityProjects/Gits/AdvertisingSdk/Assets/Basic",
-    "com.enred.androidhelper": "file:E:/WorkSpace/unityProjects/Gits/WxSdk/Assets/AndrodBuildHelper",
+    "com.enred.androidhelper": "file:E:/WorkSpace/unityProjects/Gits/AndrodBuildHelper/Assets/AndrodBuildHelper",
+    "com.google.dependencymanager": "file:E:/WorkSpace/unityProjects/ChuanShanJia-Orgion/Assets/ExternalDependencyManager",
     "com.refinter.basic": "file:E:/WorkSpace/unityProjects/Gits/Refinter/Assets/_Basic",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.ext.nunit": "1.0.0",

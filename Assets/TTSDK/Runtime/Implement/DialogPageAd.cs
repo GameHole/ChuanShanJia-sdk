@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using UnityEngine;
 using MiniGameSDK;
 using System;
@@ -9,6 +10,9 @@ namespace TTSDK
     public class DialogPageAd :MonoBehaviour,IDialogPageAd, IReloader
     {
         ExpressAd mExpressInterstitialAd;
+#if UNITY_IOS
+        ExpressInterstitialAd iExpressInterstitialAd; // for iOS
+#endif
         ExpressAdListener listener;
         ExpressAdInteractionListener expressAdInteractionListener;
         IRetryer retryer;
@@ -44,6 +48,9 @@ namespace TTSDK
                      .SetAdCount(1)
                      .SetImageAcceptedSize(Screen.width, Screen.height)
                      .SetOrientation(AdHelper.GetCurrentOrientation())
+#if UNITY_ANDROID
+                     .SetDownloadType(DownloadType.DownloadTypeNoPopup)
+#endif
                      .Build();
             AdHelper.AdNative.LoadExpressInterstitialAd(adSlot, listener);
         }
@@ -57,8 +64,13 @@ namespace TTSDK
             {
                 return;
             }
+#if UNITY_ANDROID
             this.mExpressInterstitialAd.SetDownloadListener(AdHelper.GetDownListener());
             NativeAdManager.Instance().ShowExpressInterstitialAd(ActivityGeter.GetActivity(), mExpressInterstitialAd.handle, expressAdInteractionListener);
+#endif
+#if UNITY_IOS
+            this.iExpressInterstitialAd.ShowExpressAd(0, 350);
+#endif
         }
         public void Show()
         {
@@ -94,25 +106,15 @@ namespace TTSDK
 
         public void OnExpressBannerAdLoad(ExpressBannerAd ad)
         {
-            //Debug.Log("OnExpressBannerAdLoad");
-            //this.example.information.text = "OnExpressBannerAdLoad";
-            //ad.SetExpressInteractionListener(
-            //    new ExpressAdInteractionListener(this.example,1));
-            //ad.SetDownloadListener(
-            //    new AppDownloadListener(this.example));
-            //this.example.iExpressBannerAd = ad;
         }
 
         public void OnExpressInterstitialAdLoad(ExpressInterstitialAd ad)
         {
-            //Debug.Log("OnExpressInterstitialAdLoad");
-            //this.example.information.text = "OnExpressInterstitialAdLoad";
-            //ad.SetExpressInteractionListener(
-            //    new ExpressAdInteractionListener(this.example, 2));
-            //ad.SetDownloadListener(
-            //    new AppDownloadListener(this.example));
-            //this.example.iExpressInterstitialAd = ad;
-        }
+                Debug.Log("OnExpressInterstitialAdLoad");
+                ad.SetExpressInteractionListener(example.expressAdInteractionListener);
+                ad.SetDownloadListener(AdHelper.GetDownListener());
+                this.example.iExpressInterstitialAd = ad;
+            }
 #endif
         }
 
@@ -132,9 +134,6 @@ namespace TTSDK
             public void OnAdShow(ExpressAd ad)
             {
                 Debug.Log("DialogPageAd OnAdShow");
-                example.mExpressInterstitialAd = null;
-                //example.onClose?.Invoke(true);
-                example.LoadExpressInterstitialAd();
             }
 
             public void OnAdViewRenderError(ExpressAd ad, int code, string message)
@@ -149,7 +148,14 @@ namespace TTSDK
             public void OnAdClose(ExpressAd ad)
             {
                 Debug.Log("DialogPageAd OnAdClose");
-                
+                example.mExpressInterstitialAd = null;
+                example.onClose?.Invoke(true);
+                example.LoadExpressInterstitialAd();
+            }
+
+            public void onAdRemoved(ExpressAd ad)
+            {
+                Debug.Log("DialogPageAd onAdRemoved");
             }
         }
     }

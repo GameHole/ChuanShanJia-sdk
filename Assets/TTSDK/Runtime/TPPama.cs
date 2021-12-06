@@ -7,6 +7,7 @@ namespace TTSDK
         public override string filePath => "穿山甲参数";
         public bool isDebug;
         public bool enableManualAuthorization = true;
+        public bool isLateInit;
         public string appid= "5001121";
         public string[] rewardIds = { "901121430" };
         public string[] intersititialIds = { "901121184" };
