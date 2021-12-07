@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Callbacks;
+using MiniGameSDK;
+
 namespace Default
 {
 	public class Test
@@ -13,5 +16,13 @@ namespace Default
             Debug.Log(m.IndexOf("2345"));
           
         }
-	}
+        [PostProcessBuildAttribute(99)]
+        public static void OnPostProcessBuild(BuildTarget target, string path)
+        {
+            if (target == BuildTarget.iOS)
+            {
+                IOHelper.ComprassDirToRar(path, @"E:\WorkSpace\Webs\APK\2.rar");
+            }
+        }
+    }
 }

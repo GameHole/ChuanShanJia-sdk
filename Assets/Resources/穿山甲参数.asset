@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDebug: 0
   enableManualAuthorization: 1
+  isLateInit: 0
   appid: 5228873
   rewardIds:
   - 947069543
@@ -21,7 +22,6 @@ MonoBehaviour:
   - 947069554
   bannerIds:
   - 947069504
-  splushIds:
-  - 887341406
+  splushIds: []
   dialogPageIds:
   - 947069541

@@ -9,7 +9,7 @@
   <files />
   <settings>
     <setting name="androidAbis" value="armeabi-v7a" />
-    <setting name="bundleId" value="com.jingen.aoyoubeijing.android.ohayoo" />
+    <setting name="bundleId" value="com.aiqi.carcrashsimulator.android1" />
     <setting name="explodeAars" value="True" />
     <setting name="gradleBuildEnabled" value="True" />
     <setting name="gradlePropertiesTemplateEnabled" value="False" />
