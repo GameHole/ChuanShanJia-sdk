@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.ad.orgion.pangle": "file:E:/WorkSpace/unityProjects/ChuanShanJia-Orgion/Assets/PangleAdapterScripts",
+    "com.ad.orgion.pangle": "file:E:/WorkSpace/unityProjects/Gits/ChuanShanJia-Orgion/Assets/PangleAdapterScripts",
     "com.advertisingsdk.basic": "file:E:/WorkSpace/unityProjects/Gits/AdvertisingSdk/Assets/Basic",
     "com.enred.androidhelper": "file:E:/WorkSpace/unityProjects/Gits/AndrodBuildHelper/Assets/AndrodBuildHelper",
     "com.google.dependencymanager": "file:E:/WorkSpace/unityProjects/ChuanShanJia-Orgion/Assets/ExternalDependencyManager",
