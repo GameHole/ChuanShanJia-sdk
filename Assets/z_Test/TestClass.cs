@@ -10,14 +10,20 @@ namespace MiniGameSDK
         IBannerAd banner;
         IRewardAdAPI rewardAd;
         IDialogPageAd pageAd;
+        IMenuMgr menuMgr;
         private void Awake()
         {
+           
             //splash.OnClsoe = () => Debug.Log("TestClass::splsh as closed");
             //splash.Show();
             initer.onInited += (v) =>
             {
                 Debug.Log("initer.onInited--------------");
             };
+        }
+        public void Init()
+        {
+            menuMgr.Init();
         }
         public void ShowFull()
         {

@@ -30,11 +30,9 @@ namespace TTSDK
         private void Awake()
         {
 
-#if !UNITY_EDITOR
             listener = new RewardVideoAdListener(this);
             retryer.Regist(this);
             //LoadRewardAd();
-#endif
         }
         public void AutoShow(Action<bool> onclose)
         {
@@ -87,6 +85,7 @@ namespace TTSDK
 
         public void Reload(int id)
         {
+            if (PlatfotmHelper.isEditor()) return;
             if (rewardAd != null) return;
             //Debug.Log($"reward id::{AdHelper.tp.rewardIds[id]}");
             var adSlot = new AdSlot.Builder()

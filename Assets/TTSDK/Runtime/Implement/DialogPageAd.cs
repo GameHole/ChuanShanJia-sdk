@@ -28,21 +28,31 @@ namespace TTSDK
         {
             listener = new ExpressAdListener(this);
             expressAdInteractionListener = new ExpressAdInteractionListener(this);
-#if !UNITY_EDITOR
             retryer.Regist(this);
-#endif
+            //Debug.Log( GetSize());
         }
 
         public bool isReady()
         {
             return mExpressInterstitialAd != null;
         }
-
+        Vector2Int GetSize()
+        {
+            var size = new Vector2Int(350, 0);
+#if UNITY_IOS
+            size.y = size.x;
+            size = size.AdjustScreen();
+            size *= 2;
+#endif
+            return size;
+        }
         public void Reload(int id)
         {
+            if (PlatfotmHelper.isEditor()) return;
+            var size = GetSize();
             var adSlot = new AdSlot.Builder()
                      .SetCodeId(AdHelper.tp.dialogPageIds[id])
-                     .SetExpressViewAcceptedSize(350, 0)
+                     .SetExpressViewAcceptedSize(size.x, size.y)
                       ////期望模板广告view的size,单位dp，//高度设置为0,则高度会自适应
                      .SetSupportDeepLink(true)
                      .SetAdCount(1)
@@ -60,16 +70,12 @@ namespace TTSDK
         }
         public void ShowExpressInterstitialAd()
         {
-            if (!isReady())
-            {
-                return;
-            }
 #if UNITY_ANDROID
             this.mExpressInterstitialAd.SetDownloadListener(AdHelper.GetDownListener());
             NativeAdManager.Instance().ShowExpressInterstitialAd(ActivityGeter.GetActivity(), mExpressInterstitialAd.handle, expressAdInteractionListener);
 #endif
 #if UNITY_IOS
-            this.iExpressInterstitialAd.ShowExpressAd(0, 350);
+            this.iExpressInterstitialAd?.ShowExpressAd(0, 0);
 #endif
         }
         public void Show()
@@ -87,7 +93,7 @@ namespace TTSDK
             }
             public void OnError(int code, string message)
             {
-                Debug.Log("onDialogPageAdError: " + message);
+                Debug.LogError("onDialogPageAdError: " + message);
                 example.onReloaded?.Invoke(false);
             }
 
@@ -110,7 +116,7 @@ namespace TTSDK
 
         public void OnExpressInterstitialAdLoad(ExpressInterstitialAd ad)
         {
-                Debug.Log("OnExpressInterstitialAdLoad");
+                Debug.Log("OnDialogPageAdLoad");
                 ad.SetExpressInteractionListener(example.expressAdInteractionListener);
                 ad.SetDownloadListener(AdHelper.GetDownListener());
                 this.example.iExpressInterstitialAd = ad;

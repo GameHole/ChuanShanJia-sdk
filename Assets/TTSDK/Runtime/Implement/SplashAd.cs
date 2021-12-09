@@ -37,15 +37,12 @@ namespace TTSDK
 
         public void Show()
         {
-#if UNITY_ANDROID
-#if !UNITY_EDITOR
             retryer.Regist(this);
-#endif
-#endif
         }
 
         public void Reload(int id)
         {
+            if (PlatfotmHelper.isEditor()) return;
             Debug.Log($"load {AdHelper.tp.splushIds[id]}");
             var adSlot = new AdSlot.Builder()
             .SetCodeId(AdHelper.tp.splushIds[id])

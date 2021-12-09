@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDebug: 0
   enableManualAuthorization: 1
-  isLateInit: 0
-  appid: 5228873
+  isLateInit: 1
+  appid: 5228887
   rewardIds:
-  - 947069543
+  - 946945576
   intersititialIds:
-  - 947069554
+  - 946945581
   bannerIds:
-  - 947069504
+  - 946945566
   splushIds: []
   dialogPageIds:
-  - 947069541
+  - 946945571

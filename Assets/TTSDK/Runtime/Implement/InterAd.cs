@@ -20,10 +20,8 @@ namespace TTSDK
 
         void Awake()
         {
-#if !UNITY_EDITOR
             listener = new FullScreenVideoAdListener(this);
             retryer.Regist(this);
-#endif
         }
 
 
@@ -53,6 +51,7 @@ namespace TTSDK
 
         public void Reload(int id)
         {
+            if (PlatfotmHelper.isEditor()) return;
             if (this.fullScreenVideoAd != null)
             {
                 return;

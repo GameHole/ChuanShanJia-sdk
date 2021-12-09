@@ -5,17 +5,11 @@ namespace TTSDK
 {
     public static class AdHelper
     {
-        //private static AndroidJavaObject activity;
-        //public static AndroidJavaObject GetActivity()
-        //{
-        //    if (activity == null)
-        //    {
-        //        var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-        //        if (unityPlayer != null)
-        //            activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-        //    }
-        //    return activity;
-        //}
+        public static Vector2Int AdjustScreen(this Vector2Int v)
+        {
+            float scale = Screen.width / 1920f;
+            return new Vector2Int((int)(v.x * scale), (int)(v.y * scale));
+        }
         private static AdNative adNative;
         public static AdNative AdNative
         {
@@ -25,9 +19,6 @@ namespace TTSDK
                 {
                     adNative = SDK.CreateAdNative();
                 }
-#if UNITY_ANDROID
-                SDK.RequestPermissionIfNecessary();
-#endif
                 return adNative;
             }
         }

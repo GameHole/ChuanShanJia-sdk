@@ -10,13 +10,16 @@ namespace TTSDK
     {
         public event Action<int> onInited;
         bool isInited;
+        IRetryerCtrl ctrl;
         private void callbackmethod(bool success, string message)
         {
-            onInited?.Invoke(success ? 1 : 0);
+            onInited?.Invoke(success ? 0 : -1);
+            ctrl.IsRun = true;
             Debug.Log("`````````````````初始化``````" + success + "-----" + message);
         }
         public void Initialize()
         {
+            ctrl.IsRun = false;
             var set = AScriptableObject.Get<TPPama>();
             if (!set.isLateInit)
             {
@@ -35,6 +38,7 @@ namespace TTSDK
             Pangle.InitializeSDK(callbackmethod);
 #endif
 #if UNITY_ANDROID
+            SDK.RequestPermissionIfNecessary();
             Pangle_Android.InitializeSDK(callbackmethod);
 #endif
         }

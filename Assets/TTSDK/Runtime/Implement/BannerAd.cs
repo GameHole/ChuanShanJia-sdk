@@ -6,6 +6,42 @@ using ByteDance.Union;
 
 namespace TTSDK
 {
+    class BannerAlin
+    {
+        Dictionary<BannerAd.Gravity, Func<Vector2,Vector2>> dics = new Dictionary<BannerAd.Gravity, Func<Vector2, Vector2>>();
+        public BannerAlin()
+        {
+            dics.Add(BannerAd.Gravity.BOTTOM, (size) =>
+            {
+                return new Vector2(0,Screen.height-size.y);
+            });
+            dics.Add(BannerAd.Gravity.CENTER, (size) =>
+            {
+                return new Vector2((Screen.width - size.x) * 0.5f, 0);
+            });
+            dics.Add(BannerAd.Gravity.LEFT, (size) =>
+            {
+                return new Vector2(0, 0);
+            });
+            dics.Add(BannerAd.Gravity.NO_GRAVITY, (size) =>
+            {
+                return new Vector2(0, 0);
+            });
+            dics.Add(BannerAd.Gravity.RIGHT, (size) =>
+            {
+                return new Vector2(Screen.width - size.x, 0);
+            });
+            dics.Add(BannerAd.Gravity.TOP, (size) =>
+            {
+                return new Vector2(0, 0);
+            });
+        }
+        public Vector2 GetAlin(BannerAd.Gravity gravity,Vector2 size)
+        {
+            dics.TryGetValue(gravity, out var vec);
+            return vec(size);
+        }
+    }
     public class BannerAd :MonoBehaviour, IBannerAd,IReloader
     {
         public enum Gravity
@@ -16,6 +52,7 @@ namespace TTSDK
         ExpressAd mExpressBannerAd;
 #if UNITY_IOS
         ExpressBannerAd iExpressBannerAd; // for iOS
+        BannerAlin alin = new BannerAlin();
 #endif
         ExpressAdInteractionListener expressAdInteractionListener;
         ExpressAdDislikeCallback dislikeCallback;
@@ -36,7 +73,6 @@ namespace TTSDK
         public int hightDp=90;
         public int intervalTime = 30;
         public event Action onShow;
-
 //#if UNITY_ANDROID
 //        AndroidJavaClass mgr;
 //#endif
@@ -52,9 +88,7 @@ namespace TTSDK
                 LoadExpressBannerAd();
             };
             listener = new ExpressAdListener(this, 1);
-#if !UNITY_EDITOR
             retryer.Regist(this);
-#endif
         }
         public void Show()
         {
@@ -67,10 +101,6 @@ namespace TTSDK
         }
         public void ShowExpressBannerAd()
         {
-            if (this.mExpressBannerAd == null)
-            {
-                return;
-            }
 #if UNITY_ANDROID
             //if (mgr == null)
             //    mgr = new AndroidJavaClass("com.bytedance.android.NativeAdManager");
@@ -87,25 +117,60 @@ namespace TTSDK
             NativeAdManager.Instance().ShowExpressBannerAd(ActivityGeter.GetActivity(), mExpressBannerAd.handle, expressAdInteractionListener, dislikeCallback);
 #endif
 #if UNITY_IOS
-            iExpressBannerAd.ShowExpressAd(0, Screen.height - hightDp);
+            var p = GetPosition();
+            //Debug.Log(p);
+            if(!PlatfotmHelper.isEditor())
+            iExpressBannerAd.ShowExpressAd(p.x, p.y);
 #endif
+        }
+        Vector2 GetPosition()
+        {
+            Vector2 output = new Vector2();
+            var size = GetSize();
+            for (int i = 0; i < gravities.Length; i++)
+            {
+                output += alin.GetAlin(gravities[i], size);
+            }
+            return output;
         }
         public void Hide()
         {
             //StopCountDown();
             onHide?.Invoke();
+            Release();
+        }
+        void Release()
+        {
 #if UNITY_ANDROID
             if (this.mExpressBannerAd != null)
             {
                 NativeAdManager.Instance().DestoryExpressAd(this.mExpressBannerAd.handle);
                 this.mExpressBannerAd = null;
             }
+#elif UNITY_IOS
+            iExpressBannerAd?.Dispose();
+            iExpressBannerAd = null;
 #endif
             LoadExpressBannerAd();
         }
-
+        void Close()
+        {
+            Release();
+            onClose?.Invoke(0);
+           
+        }
+        Vector2Int GetSize()
+        {
+            var size = new Vector2Int(widthDp, hightDp);
+#if UNITY_IOS
+            size = size.AdjustScreen();
+            size *= 2;
+#endif
+            return size;
+        }
         public void Reload(int id)
         {
+            if (PlatfotmHelper.isEditor()) return;
             if (widthDp == 0)
             {
                 widthDp = Screen.width;
@@ -114,13 +179,17 @@ namespace TTSDK
             {
                 hightDp = widthDp / 600 * 90;
             }
+            var size = GetSize();
+#if UNITY_IOS
+            size = new Vector2Int(size.y, size.x);
+#endif
             var tp = AdHelper.tp.bannerIds[id];
             var adSlot = new AdSlot.Builder()
                     .SetCodeId(tp)
 #if UNITY_IOS
                      .SetSlideIntervalTime(intervalTime)
 #endif
-                    .SetExpressViewAcceptedSize(widthDp, hightDp)
+                    .SetExpressViewAcceptedSize(size.x, size.y)
                     .SetSupportDeepLink(true)
                     .SetImageAcceptedSize(Screen.width, Screen.height)
                     .SetAdCount(1)
@@ -213,6 +282,7 @@ namespace TTSDK
 #if UNITY_IOS
             public void OnExpressBannerAdLoad(ExpressBannerAd ad)
             {
+                Debug.Log("IOS OnExpressBannerAdLoad");
                 ad.SetExpressInteractionListener(example.expressAdInteractionListener);
                 ad.SetDownloadListener(AdHelper.GetDownListener());
                 example.iExpressBannerAd = ad;
@@ -255,7 +325,7 @@ namespace TTSDK
             }
             public void OnAdClose(ExpressAd ad)
             {
-                banner.onHide?.Invoke();
+                banner.Close();
                 Debug.Log("express OnAdClose,type:" + type);
             }
 
