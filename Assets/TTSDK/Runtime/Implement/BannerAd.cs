@@ -50,9 +50,9 @@ namespace TTSDK
         }
         IRetryer retryer;
         ExpressAd mExpressBannerAd;
+        BannerAlin alin = new BannerAlin();
 #if UNITY_IOS
         ExpressBannerAd iExpressBannerAd; // for iOS
-        BannerAlin alin = new BannerAlin();
 #endif
         ExpressAdInteractionListener expressAdInteractionListener;
         ExpressAdDislikeCallback dislikeCallback;

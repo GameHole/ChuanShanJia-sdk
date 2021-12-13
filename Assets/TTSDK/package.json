@@ -1,10 +1,14 @@
 {
   "name": "com.advertisingsdk.ttsdk",
   "displayName": "AdvertisingSdk.TTSDK",
-  "description": "tou tiao guang gao sdk",
-  "version": "1.0.0",
+  "description": "´©É½¼×¹ã¸æsdk",
+  "version": "1.0.1",
   "unity": "2018.3",
   "license": "MIT",
   "dependencies": {
+    "com.advertisingsdk.orgion.pangle": "1.0.0",
+    "com.advertisingsdk.basic": "1.0.0",
+    "com.enred.androidhelper": "1.0.0",
+    "com.google.dependencymanager": "1.0.0"
   }
 }

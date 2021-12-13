@@ -27,6 +27,7 @@ namespace TTSDK
         RewardVideoAdListener listener;
         //AdSlot adSlot;
         public IRetryer retryer;
+        bool isShowed;
         private void Awake()
         {
 
@@ -50,6 +51,7 @@ namespace TTSDK
         {
             if (isRewared) return;
             isRewared = true;
+            isShowed = false;
             used_onClose?.Invoke(isEnd);
             if (tcs != null && !tcs.Task.IsCompleted)
                 tcs?.SetResult(isEnd);
@@ -70,6 +72,7 @@ namespace TTSDK
         /// </summary>
         public void ShowRewardAd()
         {
+            //isShowed = true;//for test
             isRewared = false;
             if (isNotUseAd)
             {
@@ -80,9 +83,23 @@ namespace TTSDK
             {
                 rewardAd.ShowRewardVideoAd();
             }
-
         }
-
+        //只有安卓需要解决切出重新加载问题
+#if UNITY_ANDROID
+        private void OnApplicationPause(bool pause)
+        {
+            if (isShowed && !pause)
+            {
+                ReleaseAd();
+                LoadRewardAd();
+            }
+        }
+#endif
+        void ReleaseAd()
+        {
+            rewardAd?.Dispose();
+            rewardAd = null;
+        }
         public void Reload(int id)
         {
             if (PlatfotmHelper.isEditor()) return;
@@ -124,10 +141,8 @@ namespace TTSDK
                 reward.onReloaded?.Invoke(false);
                 Debug.LogError("OnRewardError: " + message);
             }
-
-            public void OnRewardVideoAdLoad(RewardVideoAd ad)
+            void GetAd(RewardVideoAd ad)
             {
-                Debug.Log("OnRewardVideoAdLoad");
                 reward.onReloaded?.Invoke(true);
                 ad.SetRewardAdInteractionListener(listener);
                 ad.SetDownloadListener(AdHelper.GetDownListener());
@@ -135,9 +150,15 @@ namespace TTSDK
                 //reward.retryer.Clear(reward.retryId);
                 this.reward.rewardAd = ad;
             }
+            public void OnRewardVideoAdLoad(RewardVideoAd ad)
+            {
+                Debug.Log("OnRewardVideoAdLoad");
+                GetAd(ad);
+            }
 
             public void OnExpressRewardVideoAdLoad(ExpressRewardVideoAd ad)
             {
+                Debug.Log("OnExpressRewardVideoAdLoad");
             }
 
             public void OnRewardVideoCached()
@@ -147,7 +168,8 @@ namespace TTSDK
 
             public void OnRewardVideoCached(RewardVideoAd ad)
             {
-                Debug.Log("OnRewardVideoCached");
+                Debug.Log("OnRewardVideoCached Wirh ad");
+                //GetAd(ad);
             }
         }
 
@@ -162,6 +184,7 @@ namespace TTSDK
 
             public void OnAdShow()
             {
+                reward.isShowed = true;
                 isReward = false;
                 Debug.Log("rewardVideoAd show");
             }
@@ -174,8 +197,7 @@ namespace TTSDK
             public void OnAdClose()
             {
                 Debug.Log("rewardVideoAd close");
-                this.reward.rewardAd.Dispose();
-                this.reward.rewardAd = null;
+                this.reward.ReleaseAd();
                 this.reward.Onclose(isReward);
                 this.reward.LoadRewardAd();
             }
@@ -200,7 +222,7 @@ namespace TTSDK
 
             public void OnVideoSkip()
             {
-                
+                Debug.Log("rewardVideoAd OnVideoSkip");
             }
         }
     }
