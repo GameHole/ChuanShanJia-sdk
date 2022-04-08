@@ -111,6 +111,7 @@ namespace TTSDK
             //}
             //mgr.CallStatic("SetGravity", "mark", g);
             //设置轮播间隔 30s--120s;不设置则不开启轮播
+            if (PlatfotmHelper.isEditor()) return;
             if (intervalTime > 0)
                 this.mExpressBannerAd.SetSlideIntervalTime(intervalTime * 1000);
             this.mExpressBannerAd.SetDownloadListener(AdHelper.GetDownListener());
@@ -119,7 +120,6 @@ namespace TTSDK
 #if UNITY_IOS
             var p = GetPosition();
             //Debug.Log(p);
-            if(!PlatfotmHelper.isEditor())
             iExpressBannerAd.ShowExpressAd(p.x, p.y);
 #endif
         }

@@ -80,6 +80,7 @@ namespace TTSDK
         }
         public void Show()
         {
+            if (PlatfotmHelper.isEditor()) return;
             ShowExpressInterstitialAd();
         }
 

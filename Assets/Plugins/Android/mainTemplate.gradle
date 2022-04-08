@@ -28,7 +28,7 @@ allprojects{
             url "https://maven.google.com"
         }
         maven {
-            url "https://artifact.bytedance.com/repository/pangle" // Packages/com.ad.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:12
+            url "https://artifact.bytedance.com/repository/pangle" // Packages/com.advertisingsdk.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:12
         }
         mavenLocal()
         jcenter()
@@ -41,11 +41,11 @@ apply plugin: 'com.android.application'
 dependencies{
      implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.android.support:appcompat-v7:28.0.0' // Packages/com.ad.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:27
-    implementation 'com.android.support:support-annotations:28.0.0' // Packages/com.ad.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:28
-    implementation 'com.android.support:support-v4:28.0.0' // Packages/com.ad.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:29
-    implementation 'com.pangle.cn:ads-sdk-pro:4.1.0.0' // Packages/com.ad.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:25
-    implementation 'com.squareup.okhttp3:okhttp:3.12.1' // Packages/com.ad.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:26
+    implementation 'com.android.support:appcompat-v7:28.0.0' // Packages/com.advertisingsdk.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:27
+    implementation 'com.android.support:support-annotations:28.0.0' // Packages/com.advertisingsdk.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:28
+    implementation 'com.android.support:support-v4:28.0.0' // Packages/com.advertisingsdk.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:29
+    implementation 'com.pangle.cn:ads-sdk-pro:4.1.0.0' // Packages/com.advertisingsdk.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:25
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1' // Packages/com.advertisingsdk.orgion.pangle/Editor/PangleAdapterScriptsDependencies.xml:26
 // Android Resolver Dependencies End
      **DEPS**
 }
